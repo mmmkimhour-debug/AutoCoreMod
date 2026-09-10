@@ -17,7 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
-public class HeavyCoreAutoLoopMod implements ClientModInitializer {
+public class ExampleMod implements ClientModInitializer {
     private static KeyBinding toggleKey;
     private static boolean isAutoScanning = false;
     private int tickCounter = 0;
