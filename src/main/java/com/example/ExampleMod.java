@@ -1,4 +1,4 @@
-package com.autocore;
+package com.example;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -17,16 +17,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
-public class HeavyCoreAutoLoopMod implements ClientModInitializer {
+public class ExampleMod implements ClientModInitializer {
     private static KeyBinding toggleKey;
-    private static boolean isAutoScanning = false; // រក្សា trạngថានៃការ Auto-Loop
+    private static boolean isAutoScanning = false;
     private int tickCounter = 0;
 
     @Override
     public void onInitializeClient() {
-        // បង្កើត Keybinding [G]
         toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.autocore.toggle_loop",
+            "key.autocore.toggle_auto_off",
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_G,
             "category.autocore"
@@ -35,17 +34,15 @@ public class HeavyCoreAutoLoopMod implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null || client.world == null) return;
 
-            // ១. ចាប់ Event ពេលចុច [G] ដើម្បី បើក ឬ បិទ (ON / OFF)
             while (toggleKey.wasPressed()) {
                 isAutoScanning = !isAutoScanning;
                 if (isAutoScanning) {
-                    client.player.sendMessage(Text.literal("§a[AutoCore] បានបើក Auto Scanner! កំពុងរង់ចាំ Heavy Core..."), true);
+                    client.player.sendMessage(Text.literal("§a[AutoCore] បើក Auto Scanner! កំពុងរង់ចាំ Heavy Core..."), true);
                 } else {
                     client.player.sendMessage(Text.literal("§c[AutoCore] បានបិទ Auto Scanner!"), true);
                 }
             }
 
-            // ២. ប្រសិនបើកំពុងបើក (ON) វានឹងស្កេនរៀងរាល់ 1/2 វិនាទី (10 ticks) ម្ដងដោយស្វ័យប្រវត្តិ
             if (isAutoScanning) {
                 tickCounter++;
                 if (tickCounter >= 10) { 
@@ -67,12 +64,14 @@ public class HeavyCoreAutoLoopMod implements ClientModInitializer {
                 if (blockEntity instanceof VaultBlockEntity vault) {
                     var displayItem = vault.getClientData().getDisplayItem();
 
-                    // បើឃើញ Heavy Core វានឹងចាក់ស្វ័យប្រវត្តិភ្លាម
                     if (displayItem != null && displayItem.isOf(Items.HEAVY_CORE)) {
                         BlockHitResult hitResult = new BlockHitResult(Vec3d.ofCenter(pos), Direction.UP, pos, false);
+                        
                         if (client.interactionManager != null) {
                             client.interactionManager.interactBlock(client.player, Hand.MAIN_HAND, hitResult);
-                            client.player.sendMessage(Text.literal("§a[AutoCore] បានចាក់យក Heavy Core ដោយស្វ័យប្រវត្តិ!"), true);
+                            client.player.sendMessage(Text.literal("§a[AutoCore] ចាក់បាន Heavy Core រួចរាល់! ប្រព័ន្ធត្រូវ​បានបិទស្វ័យប្រវត្តិ។"), false);
+                            isAutoScanning = false; 
+                            break;
                         }
                     }
                 }
